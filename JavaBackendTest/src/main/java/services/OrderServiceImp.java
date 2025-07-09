@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import Repositorys.OrderRepository;
 import Repositorys.ProductRepository;
+import controllers.FinishOrderRequest;
 import model.Order;
 import model.PaymentResult;
 import model.Product;
@@ -115,16 +116,16 @@ public class OrderServiceImp implements OrderService {
 	}
 
 	@Override
-	public void finishOrder(Long orderId, String cardToken, String paymentGatewayName) {
+	public void finishOrder(Long orderId, FinishOrderRequest request) {
 
 		Optional<Order> orderInDb = orderRepository.findById(orderId);
 		if (orderInDb.isPresent()) {
 			Order order = orderInDb.get();
-			PaymentResult result = mockPaymentGateway.processPayment(cardToken, order.getPayment().getTotalPrice());
+			PaymentResult result = mockPaymentGateway.processPayment(request.getCardToken(), order.getPayment().getTotalPrice());
 
 			order.getPayment().setStatus(result.getStatus());
 			order.getPayment().setPaymentDate(LocalDateTime.now());
-			order.getPayment().setPaymentGateway(paymentGatewayName);
+			order.getPayment().setPaymentGateway(request.getPaymentGateway());
 			if (result.getStatus() == PaymentStatus.PAID) {
 				order.setStatus(OrderStatus.FINISHED);
 			}
