@@ -1,6 +1,7 @@
 package services;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,19 +16,23 @@ import org.springframework.stereotype.Service;
 import Repositorys.OrderRepository;
 import Repositorys.ProductRepository;
 import model.Order;
+import model.PaymentResult;
 import model.Product;
 import model.enums.OrderStatus;
+import model.enums.PaymentStatus;
 
 @Service
 public class OrderServiceImp implements OrderService {
 
 	private final OrderRepository orderRepository;
-
 	private final ProductRepository productRepository;
+	private final MockPaymentGateway mockPaymentGateway;
 
-	public OrderServiceImp(OrderRepository orderRepositori, ProductRepository productRepository) {
+	public OrderServiceImp(OrderRepository orderRepositori, ProductRepository productRepository,
+			MockPaymentGateway mockPaymentGateway) {
 		this.orderRepository = orderRepositori;
 		this.productRepository = productRepository;
+		this.mockPaymentGateway = mockPaymentGateway;
 	}
 
 	@Override
@@ -71,8 +76,7 @@ public class OrderServiceImp implements OrderService {
 					}
 
 				}
-				
-				
+
 			}
 
 			updatingOrder.getPayment().setTotalPrice(totalPrice);
@@ -101,8 +105,33 @@ public class OrderServiceImp implements OrderService {
 	}
 
 	@Override
-	public void cancelOrder(Long id) {
-		// TODO Auto-generated method stub
+	public void cancelOrder(Long orderId) {
+		Optional<Order> orderInDb = orderRepository.findById(orderId);
+		if (orderInDb.isPresent()) {
+			Order order = orderInDb.get();
+			order.setStatus(OrderStatus.CANCELED);
+		}
+
+	}
+
+	@Override
+	public void finishOrder(Long orderId, String cardToken, String paymentGatewayName) {
+
+		Optional<Order> orderInDb = orderRepository.findById(orderId);
+		if (orderInDb.isPresent()) {
+			Order order = orderInDb.get();
+			PaymentResult result = mockPaymentGateway.processPayment(cardToken, order.getPayment().getTotalPrice());
+
+			order.getPayment().setStatus(result.getStatus());
+			order.getPayment().setPaymentDate(LocalDateTime.now());
+			order.getPayment().setPaymentGateway(paymentGatewayName);
+			if (result.getStatus() == PaymentStatus.PAID) {
+				order.setStatus(OrderStatus.FINISHED);
+			}
+
+			orderRepository.save(order);
+
+		}
 
 	}
 

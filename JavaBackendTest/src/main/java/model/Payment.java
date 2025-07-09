@@ -1,6 +1,7 @@
 package model;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import model.enums.PaymentStatus;
@@ -10,7 +11,7 @@ public class Payment {
 	private BigDecimal totalPrice;
 	private String cardToken;
 	private PaymentStatus status;
-	private Date paymentDate;
+	private LocalDateTime paymentDate;
 	private String paymentGateway;
 	
 	
@@ -32,10 +33,10 @@ public class Payment {
 	public void setStatus(PaymentStatus status) {
 		this.status = status;
 	}
-	public Date getPaymentDate() {
+	public LocalDateTime getPaymentDate() {
 		return paymentDate;
 	}
-	public void setPaymentDate(Date paymentDate) {
+	public void setPaymentDate(LocalDateTime paymentDate) {
 		this.paymentDate = paymentDate;
 	}
 	public String getPaymentGateway() {
