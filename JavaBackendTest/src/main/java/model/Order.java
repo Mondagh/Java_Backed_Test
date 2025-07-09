@@ -1,14 +1,11 @@
 package model;
 
-import java.util.Date;
 import java.util.List;
-
-import jakarta.validation.constraints.NotNull;
-import model.enums.OrderStatus;
-
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import model.enums.OrderStatus;
 
 @Entity
 public class Order {

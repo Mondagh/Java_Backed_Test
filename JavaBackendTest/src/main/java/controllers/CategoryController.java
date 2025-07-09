@@ -10,25 +10,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import model.Product;
-import services.ProductService;
+import model.Category;
+import services.CategoryService;
 
 @RestController
-@RequestMapping("products")
-public class ProductController {
+@RequestMapping("/categories")
+public class CategoryController {
+
 	
 	@Autowired
-	private ProductService service;
+	private CategoryService service;
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
-	public void putProduct( @Valid @RequestBody Product product){
-		 service.putProduct(product);
+	public void putCategory( @Valid @RequestBody Category category){
+		 service.putCategory(category);
 	}
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
-	public void deleteProduct(@PathVariable Long id) {
-		service.deleteProduct(id);
+	public void deteleCataegory(@PathVariable Long id) {
+		service.deleteCategory(id);
 	}
-
 }
